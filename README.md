@@ -22,21 +22,7 @@ docker build --rm -t ghcr.io/virzz/drone-git-sync .
 podman build --rm -t ghcr.io/virzz/drone-git-sync .
 ```
 
-## Usage
-
-Execute from the working directory:
-
-```sh
-docker run --rm \
-  -e PLUGIN_SSH_KEY="$(cat "${HOME}/.ssh/id_rsa")" \
-  -e PLUGIN_REMOTE=git@github.com:foo/bar.git \
-  -e PLUGIN_FORCE=false \
-  -v "$(pwd):$(pwd)" \
-  -w "$(pwd)" \
-  ghcr.io/virzz/drone-git-sync
-```
-
-## .drone.yml
+## Usage .drone.yml
 
 ```yaml
 steps:

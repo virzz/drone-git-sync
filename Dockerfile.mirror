@@ -2,7 +2,9 @@ FROM golang:alpine as builder
 
 WORKDIR /build
 
-ENV GO111MODULE=on CGO_ENABLED=0 GOPROXY="https://proxy.golang.com.cn,direct"
+ENV GO111MODULE=on CGO_ENABLED=0 GOPROXY="https://goproxy.cn,https://proxy.golang.com.cn,direct"
+
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 
 RUN apk update && apk add --no-cache upx git
 
@@ -29,7 +31,8 @@ LABEL org.label-schema.name="drone-git-sync" \
   org.opencontainers.image.description="Drone Git Sync" \
   org.opencontainers.image.licenses="MIT"
 
-RUN apk update && \
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories  && \
+  apk update && \
   apk add --no-cache ca-certificates git git-lfs openssh curl perl && \
   rm -rf /var/cache/apk/*
 

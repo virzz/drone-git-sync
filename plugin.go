@@ -8,6 +8,8 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 const remoteName = "drone"
@@ -21,14 +23,15 @@ func execute(cmd *exec.Cmd) error {
 }
 
 func pluginExec() error {
-	if skipVerify {
+	if viper.GetBool("skip-verify") {
 		cmd := exec.Command("git", "config", "--global", "http.sslVerify", "false")
 		if err := execute(cmd); err != nil {
 			return err
 		}
 	}
+	sshKey := viper.GetString("ssh-key")
 	if sshKey == "" {
-		return nil
+		return errors.New("missing ssh key")
 	}
 	home := "/root"
 	if currentUser, err := user.Current(); err == nil {
@@ -43,6 +46,7 @@ func pluginExec() error {
 	if err != nil {
 		return err
 	}
+	remote := viper.GetString("remote")
 	if remote != "" {
 		cmd := exec.Command("git", "remote", "add", remoteName, remote)
 		if err := execute(cmd); err != nil {
@@ -60,7 +64,7 @@ func pluginExec() error {
 		return errors.New("missing ref")
 	}
 	cmd := exec.Command("git", "push", remoteName, ref)
-	if force {
+	if viper.GetBool("force") {
 		cmd.Args = append(cmd.Args, "--force")
 	}
 	return execute(cmd)
